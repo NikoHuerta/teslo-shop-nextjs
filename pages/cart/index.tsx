@@ -8,7 +8,7 @@ const CartPage = () => {
     <ShopLayout title='Shoping Cart - 3' pageDescription='Store Shopping Cart' >
         <Typography variant='h1' component='h1'>Shopping Cart</Typography>
 
-        <Grid container>
+        <Grid container sx={{ mt:3 }}>
             <Grid item xs={12} sm={7}>
 
                 {/* Cart List */}

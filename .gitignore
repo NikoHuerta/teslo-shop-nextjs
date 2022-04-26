@@ -12,6 +12,12 @@
 /.next/
 /out/
 
+#.env
+.env
+
+#mongoDB data
+/mongo
+
 # production
 /build
 

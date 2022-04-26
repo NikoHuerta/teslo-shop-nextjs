@@ -7,7 +7,7 @@ import { ShopLayout } from '../../components/layouts';
 
 const SummaryPage = () => {
   return (
-    <ShopLayout title='Order Summary' pageDescription='Summary of the order' >
+    <ShopLayout title='Order Summary' pageDescription='Summary of the order'>
         <Typography variant='h1' component='h1'>Order Summary</Typography>
 
         <Grid container sx={{ mt:3 }}>

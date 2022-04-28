@@ -7,8 +7,6 @@ interface Response {
     ok: boolean;
     products?: IProduct[];
     message: string;
-
-
 }
 
 export const useProducts = (url: string, config: SWRConfiguration= {} ) => {

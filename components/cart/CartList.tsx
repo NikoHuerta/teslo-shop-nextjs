@@ -1,18 +1,10 @@
+import { FC, useContext } from "react"
 import NextLink from 'next/link';
 
 import { Box, Button, CardActionArea, CardMedia, Grid, Link, Typography } from "@mui/material";
-import { FC } from "react"
-import { initialData } from "../../database/products";
+import { ICartProduct } from "../../interfaces";
+import { CartContext } from '../../context';
 import { ItemCounter } from '../ui';
-
-
-
-
-const productInCart = [
-    initialData.products[0],
-    initialData.products[1],
-    initialData.products[2],
-];
 
 
 interface Props {
@@ -21,19 +13,31 @@ interface Props {
 
 
 export const CartList:FC<Props> = ({ editable = false }) => {
+
+    const { cart, updateCartQuantity, removeCartProduct } = useContext(CartContext);
+
+    const onNewCartQuantityValue = (product: ICartProduct, newQuantityValue: number) => {
+        product.quantity = newQuantityValue;
+        updateCartQuantity( product );
+    }
+
+    const onRemoveProduct = (product: ICartProduct) => {
+        removeCartProduct( product );
+    }
+
+
   return (
-    
     <>
         {
-            productInCart.map(product => (
-                <Grid container key={ product.slug } sx={{ mx: 1 }}>
+            cart.map(product => (
+                <Grid container key={ product.slug + product.size } sx={{ mx: 1 }}>
                     <Grid item xs={3}>                        
                         {/* TODO: llevar a la pagina del producto  `/product/${ product.slug }` */}
-                        <NextLink href='/product/slug' passHref>
+                        <NextLink href= { `/product/${ product.slug }` } passHref>
                             <Link>
                                 <CardActionArea>
                                     <CardMedia 
-                                        image={ `/products/${ product.images[0] }` }
+                                        image={ `/products/${ product.images }` }
                                         component='img'
                                         sx={{ borderRadius: '5px' }}
                                     />
@@ -45,13 +49,19 @@ export const CartList:FC<Props> = ({ editable = false }) => {
                     <Grid item xs={7}>
                         <Box display='flex' flexDirection='column'>
                             <Typography variant='body1'>{ product.title }</Typography>
-                            <Typography variant='body1'>Size: <strong>M</strong></Typography>
+                            <Typography variant='body1'>Size: <strong>{ product.size }</strong></Typography>
 
                             {/* Condicional */}
                             {
                                 editable 
-                                ?   <ItemCounter />
-                                :   <Typography variant='h5'>1 item</Typography>
+                                ?   (
+                                        <ItemCounter 
+                                            currentValue={product.quantity} 
+                                            maxValue={ 10 } 
+                                            updatedQuantity={ ( value ) => onNewCartQuantityValue(product, value) } 
+                                        />
+                                    )
+                                :   <Typography variant='h5'>{ product.quantity} item</Typography>
                             }
 
                         </Box>                        
@@ -62,7 +72,11 @@ export const CartList:FC<Props> = ({ editable = false }) => {
                         {/* Editable */}
                         {
                             editable && (
-                                <Button variant='text' color='secondary'>
+                                <Button 
+                                    variant='text' 
+                                    color='secondary'
+                                    onClick={ () => onRemoveProduct( product ) }
+                                >
                                     Remove
                                 </Button>
                             )   

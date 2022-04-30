@@ -4,4 +4,4 @@ export * as dbProducts from './dbProducts';
 
 
 //BASE DE DATOS DE PRUEBA
-export * as seedDatabase from './products';
+export * as seedDatabase from './seed-data';

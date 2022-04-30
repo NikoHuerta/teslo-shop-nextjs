@@ -32,7 +32,6 @@ export const CartList:FC<Props> = ({ editable = false }) => {
             cart.map(product => (
                 <Grid container key={ product.slug + product.size } sx={{ mx: 1 }}>
                     <Grid item xs={3}>                        
-                        {/* TODO: llevar a la pagina del producto  `/product/${ product.slug }` */}
                         <NextLink href= { `/product/${ product.slug }` } passHref>
                             <Link>
                                 <CardActionArea>
@@ -61,7 +60,7 @@ export const CartList:FC<Props> = ({ editable = false }) => {
                                             updatedQuantity={ ( value ) => onNewCartQuantityValue(product, value) } 
                                         />
                                     )
-                                :   <Typography variant='h5'>{ product.quantity} item</Typography>
+                                :   <Typography variant='h5'>{ product.quantity } item</Typography>
                             }
 
                         </Box>                        

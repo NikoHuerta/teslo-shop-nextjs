@@ -6,6 +6,10 @@ import { ICartProduct } from '../../interfaces';
 
 export interface CartState {
    cart: ICartProduct[];
+   numberOfItems: number;
+   subTotal: number;
+   tax: number;
+   total: number;
 }
 
 interface Prop {
@@ -13,8 +17,12 @@ interface Prop {
 }
 
 const CART_INITIAL_STATE: CartState = {
-   // cart: [],
-   cart: Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [],
+   cart: [],
+   numberOfItems: 0,
+   subTotal: 0,
+   tax: 0,
+   total: 0,
+   // cart: Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [],
 }
 
 
@@ -23,14 +31,33 @@ export const CartProvider:FC<Prop> = ({ children }) => {
    const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE);
 
    // ERROR CON REACT18 SE EJECUTA PRIMERO ESTE USE EFFECT Y LUEGO EL CART_INITIAL_STATE ... TRABAJAR CONDICION EN EL CART_INITIAL_STATE
-      // useEffect(() => {
-      //    const cookieProducts = Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [];
-      //    dispatch({ type: '[Cart] - LoadCart from cookies | storage', payload: cookieProducts });
-      // }, []);
+   //next.config.js --> const nextConfig = { reactStrictMode: false, }
+   useEffect(() => {
+      const cookieProducts = Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [];
+      dispatch({ type: '[Cart] - LoadCart from cookies | storage', payload: cookieProducts });
+   }, []);
 
    useEffect(() => {
-     Cookie.set('cart', JSON.stringify(state.cart));
-   }, [state.cart])
+      Cookie.set('cart', JSON.stringify(state.cart));
+   }, [state.cart]);
+
+   useEffect(() => {
+
+      const numberOfItems = state.cart.reduce((prev, current) => current.quantity + prev , 0);
+      const subTotal = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0);
+      const taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0);
+
+      const orderSummary = {
+         numberOfItems,
+         subTotal,
+         tax: subTotal * taxRate,
+         total: subTotal * (1 + taxRate),
+      }
+
+      dispatch({ type: '[Cart] - Update order summary', payload: orderSummary });
+
+   }, [state.cart]);
+   
    
 
    const addProductToCart = async (product: ICartProduct) => {

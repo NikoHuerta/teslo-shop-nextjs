@@ -9,9 +9,9 @@ const userSchema = new Schema({
     role: {
         type: String,
         enum: {
-            values: ['admin', 'user'],
+            values: ['admin', 'client'],
             message: '{VALUE} is not a valid role',
-            default: 'user',
+            default: 'client',
             required: true,
         }
     }
@@ -22,3 +22,5 @@ const userSchema = new Schema({
 
 
 const User:Model<IUser> = mongoose.models.User || model('User', userSchema);
+
+export default User;

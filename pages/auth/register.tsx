@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useForm } from 'react-hook-form';
 import { Box, Button, Chip, Grid, Link, TextField, Typography } from '@mui/material';
 import { ErrorOutline, LoopOutlined } from '@mui/icons-material';
 
+import { AuthContext } from '../../context';
 import { validations } from '../../utils';
 import { AuthLayout } from '../../components/layouts';
 import { tesloAPI } from '../../api';
@@ -20,7 +22,11 @@ type FormData = {
 
 const RegisterScreen = () => {
 
+    const router = useRouter();
+    const { registerUser } = useContext( AuthContext );
+
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [isFetching, setIsFetching] = useState(false);
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>();
 
@@ -33,23 +39,18 @@ const RegisterScreen = () => {
         setShowError(false);
         setIsFetching(true);
 
-        try{
-            const { data } = await tesloAPI.post('/user/register', { name: fullName, email, password });
-            const { token, user }  = data;
-            console.log({token, user});
-            
-        }catch( error ){
-            setShowError(true);
-            console.log(error);
+        const { hasError, message ='' } = await registerUser(fullName, email, password);
+        setIsFetching(false);
 
-        }finally{
-            setIsFetching(false);
-            setTimeout(() => {
-                setShowError(false);
-            }, 3000);
+        if( hasError ){
+            setShowError(true);
+            setErrorMessage( message );
+            setTimeout(() => setShowError(false) , 3000);
+            return;
         }
 
         //TODO: navigate to previous page or home
+        router.replace('/'); //home
     }
 
 

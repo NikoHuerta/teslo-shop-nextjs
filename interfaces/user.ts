@@ -9,3 +9,9 @@ export interface IUser{
     updatedAt: string;
 
 }
+
+export interface IUserContext{
+    email: string;
+    name: string;
+    role: string;
+}

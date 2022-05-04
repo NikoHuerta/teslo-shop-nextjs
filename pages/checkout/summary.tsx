@@ -1,11 +1,27 @@
 import NextLink from 'next/link';
 
 import { Box, Button, Card, CardContent, Divider, Grid, Link, Typography } from '@mui/material';
-import { CartList, OrderSummary } from '../../components/cart';
+import Cookies from 'js-cookie';
 
+import { CartList, OrderSummary } from '../../components/cart';
 import { ShopLayout } from '../../components/layouts';
 
+type addressData = {
+    firstName:  string;
+    lastName:   string;
+    address:    string;
+    address2?:  string;
+    zipCode:    string;
+    city:       string;
+    country:    string;
+    phone:      string;
+}
+
 const SummaryPage = () => {
+
+    const { firstName, lastName, address, address2 = undefined , city, zipCode, country, phone  }: addressData = JSON.parse(Cookies.get('addressData') || '');
+
+
   return (
     <ShopLayout title='Order Summary' pageDescription='Summary of the order'>
         <Typography variant='h1' component='h1'>Order Summary</Typography>
@@ -34,11 +50,15 @@ const SummaryPage = () => {
                         </Box>
 
                         {/* <Box display='flex' flexDirection='column' alignItems='start'> */}
-                        <Typography>Nicolas Huerta</Typography>
-                        <Typography>Sazie 2128</Typography>
-                        <Typography>Santiago, 832400</Typography>
-                        <Typography>Chile</Typography>
-                        <Typography>+569 92181355</Typography>
+                        <Typography>{ firstName } {lastName}</Typography>
+                        <Typography>{ address }</Typography>
+                        { 
+                            address2 &&
+                                <Typography>{ address2 }</Typography>
+                        }
+                        <Typography>{ city }, {zipCode}</Typography>
+                        <Typography>{ country }</Typography>
+                        <Typography>{ phone }</Typography>
                         {/* </Box> */}
                         <Divider sx={{ my:1 }}></Divider>
                         

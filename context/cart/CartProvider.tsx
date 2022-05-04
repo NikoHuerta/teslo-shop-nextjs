@@ -5,11 +5,27 @@ import { CartContext, cartReducer } from '.';
 import { ICartProduct } from '../../interfaces';
 
 export interface CartState {
+
+   isLoaded: boolean;
    cart: ICartProduct[];
    numberOfItems: number;
    subTotal: number;
    tax: number;
    total: number;
+
+   shippingAddress?: ShippingAddress;
+}
+
+export interface ShippingAddress{
+   
+   firstName:  string;
+   lastName:   string;
+   address:    string;
+   address2?:  string;
+   zipCode:    string;
+   city:       string;
+   country:    string;
+   phone:      string;
 }
 
 interface Prop {
@@ -17,11 +33,15 @@ interface Prop {
 }
 
 const CART_INITIAL_STATE: CartState = {
+   isLoaded: false,
    cart: [],
    numberOfItems: 0,
    subTotal: 0,
    tax: 0,
    total: 0,
+
+   shippingAddress: undefined
+
    // cart: Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [],
 }
 
@@ -99,6 +119,7 @@ export const CartProvider:FC<Prop> = ({ children }) => {
        addProductToCart,
        removeCartProduct,
        updateCartQuantity,
+       
    }}>
        { children }
    </CartContext.Provider>

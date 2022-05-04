@@ -33,6 +33,8 @@ const RegisterScreen = () => {
     const passwordRef = useRef({});
     passwordRef.current = watch('password', '');
 
+    const destination = router.query.p?.toString() || '/';
+
 
     const onRegisterForm = async ({ fullName, email, password }: FormData) => {
         
@@ -50,7 +52,7 @@ const RegisterScreen = () => {
         }
 
         //TODO: navigate to previous page or home
-        router.replace('/'); //home
+        router.replace( destination ); //home
     }
 
 
@@ -153,7 +155,7 @@ const RegisterScreen = () => {
                     </Grid>
 
                     <Grid item xs={12} display='flex' justifyContent='end'>
-                        <NextLink href='/auth/login' passHref>
+                        <NextLink href={`/auth/login?p=${ destination }`} passHref>
                             <Link>
                                 <Typography variant='body2' color='textSecondary' sx={{ textDecoration: 'underline' }}>Already have an account? Login Here</Typography>
                             </Link>

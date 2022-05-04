@@ -1,4 +1,6 @@
 import { FC, ReactNode, useEffect, useReducer } from 'react';
+import { useRouter } from 'next/router';
+
 import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
@@ -26,6 +28,7 @@ const AUTH_INITIAL_STATE: AuthState = {
 export const AuthProvider:FC<Prop> = ({ children }) => {
 
    const [state, dispatch] = useReducer( authReducer, AUTH_INITIAL_STATE );
+   const router = useRouter();
 
    //check token en primer render
     useEffect(() => {
@@ -75,6 +78,11 @@ export const AuthProvider:FC<Prop> = ({ children }) => {
     }
 
     const checkToken = async () => {
+
+        if ( !Cookies.get( 'token' ) ) {
+            return ;
+        }
+
         try {
             //COOKIES ARE SENT BY DEFAULT TO SERVER
             const { data } = await tesloAPI.post('/user/validate-token');
@@ -87,6 +95,15 @@ export const AuthProvider:FC<Prop> = ({ children }) => {
         }
     }
 
+    const logoutUser = () => {
+        Cookies.remove('token');
+        Cookies.remove('cart');
+
+        router.reload();
+
+        // dispatch({ type: '[Auth] - Logout' });
+    }
+
 
    return (
    <AuthContext.Provider value={{
@@ -96,6 +113,7 @@ export const AuthProvider:FC<Prop> = ({ children }) => {
         loginUser,
         registerUser,
         checkToken,
+        logoutUser,
    }}>
        { children }
    </AuthContext.Provider>

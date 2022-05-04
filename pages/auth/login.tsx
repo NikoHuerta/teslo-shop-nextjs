@@ -22,7 +22,9 @@ const LoginPage = () => {
     const [showError, setShowError] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-
+    
+    const destination = router.query.p?.toString() || '/';
+    
     const onLoginUser = async ({ email, password }: FormData) => {
 
         setShowError(false);
@@ -38,7 +40,8 @@ const LoginPage = () => {
             return;
         }
         //TODO: navigate to previous page or home
-        router.replace('/'); //home
+        router.replace( destination );
+
     }
 
 
@@ -117,7 +120,7 @@ const LoginPage = () => {
                         </Grid>
 
                         <Grid item xs={12} display='flex' justifyContent='end'>
-                            <NextLink href='/auth/register' passHref>
+                            <NextLink href={`/auth/register?p=${ destination }`} passHref>
                                 <Link>
                                     <Typography variant='body2' color='textSecondary' sx={{ textDecoration: 'underline' }}>Register Here</Typography>
                                 </Link>

@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { useRouter } from 'next/router';
 
 import { useForm } from 'react-hook-form';
 import { Box, Button, FormControl, Grid, MenuItem, TextField, Typography } from '@mui/material';
@@ -6,7 +7,7 @@ import Cookies from 'js-cookie';
 
 import { ShopLayout } from '../../components/layouts/ShopLayout';
 import { countries } from '../../utils';
-import { useRouter } from 'next/router';
+import { CartContext } from '../../context';
 // import { GetServerSideProps } from 'next'
 // import { jwt } from '../../utils';
 
@@ -41,16 +42,15 @@ const getAddressFromCookies = ():FormData => {
 const AddressPage = () => {
 
     const router = useRouter();
+    const { updateShippingAddress } = useContext( CartContext );
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         defaultValues: getAddressFromCookies()
     });
 
     const onAddressSubmit = ( data: FormData ) =>{
-        console.log(data);
-        Cookies.set('addressData', JSON.stringify(data));
+        updateShippingAddress( data );
         router.push('/checkout/summary');
-
     }
 
     return (
@@ -132,15 +132,18 @@ const AddressPage = () => {
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <TextField
+                            // key={ Cookies.get('country') || countries[0].code}
+                            
                             select
                             variant='filled'
                             label='Country'
+                            // defaultValue={ Cookies.get('country') || countries[0].code }
                             defaultValue={ countries[0].code }
                             {...register('country', {
                                 required: 'Country is required',
                             })}
                             error={ !! errors.country }
-                            helperText={ errors.country?.message }
+                            //helperText={ errors.country?.message }
                         >
                         {
                             countries.map( (country, index) => (

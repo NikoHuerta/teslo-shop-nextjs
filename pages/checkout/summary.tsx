@@ -1,26 +1,24 @@
+import { useContext } from 'react';
 import NextLink from 'next/link';
 
 import { Box, Button, Card, CardContent, Divider, Grid, Link, Typography } from '@mui/material';
-import Cookies from 'js-cookie';
 
 import { CartList, OrderSummary } from '../../components/cart';
+import { CartContext } from '../../context';
 import { ShopLayout } from '../../components/layouts';
+import { ShippingAddress } from '../../interfaces';
+import  { countries } from '../../utils';
 
-type addressData = {
-    firstName:  string;
-    lastName:   string;
-    address:    string;
-    address2?:  string;
-    zipCode:    string;
-    city:       string;
-    country:    string;
-    phone:      string;
-}
 
 const SummaryPage = () => {
 
-    const { firstName, lastName, address, address2 = undefined , city, zipCode, country, phone  }: addressData = JSON.parse(Cookies.get('addressData') || '');
-
+    
+    const { shippingAddress, numberOfItems } = useContext( CartContext );
+    // console.log(shippingAddress);
+    if( !shippingAddress ){
+        return <></>;
+    }
+    const { firstName, lastName, address, address2 = undefined , city, zipCode, country, phone }: ShippingAddress = shippingAddress!;
 
   return (
     <ShopLayout title='Order Summary' pageDescription='Summary of the order'>
@@ -36,7 +34,7 @@ const SummaryPage = () => {
             <Grid item xs={12} sm={5}>
                 <Card className='summary-card'>
                     <CardContent>
-                        <Typography variant='h2' component='h2'>Summary (3 products)</Typography>
+                        <Typography variant='h2' component='h2'>Summary ( { numberOfItems } { numberOfItems === 1 ? 'product' : 'products' } )</Typography>
                         <Divider sx={{ my: 1 }} />
 
 
@@ -57,7 +55,7 @@ const SummaryPage = () => {
                                 <Typography>{ address2 }</Typography>
                         }
                         <Typography>{ city }, {zipCode}</Typography>
-                        <Typography>{ country }</Typography>
+                        <Typography>{ countries.find( ({ code: valCode }) => valCode === country  )?.name   }</Typography>
                         <Typography>{ phone }</Typography>
                         {/* </Box> */}
                         <Divider sx={{ my:1 }}></Divider>

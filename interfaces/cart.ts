@@ -10,3 +10,15 @@ export interface ICartProduct {
     gender: IGender;
     quantity: number;
 }
+ 
+export interface ShippingAddress{
+   
+    firstName:  string;
+    lastName:   string;
+    address:    string;
+    address2?:  string;
+    zipCode:    string;
+    city:       string;
+    country:    string;
+    phone:      string;
+ }

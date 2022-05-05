@@ -2,7 +2,11 @@ import { FC, ReactNode, useEffect, useReducer } from 'react';
 import Cookie from 'js-cookie';
 
 import { CartContext, cartReducer } from '.';
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, ShippingAddress } from '../../interfaces';
+
+interface Prop {
+   children: ReactNode;
+}
 
 export interface CartState {
 
@@ -14,22 +18,6 @@ export interface CartState {
    total: number;
 
    shippingAddress?: ShippingAddress;
-}
-
-export interface ShippingAddress{
-   
-   firstName:  string;
-   lastName:   string;
-   address:    string;
-   address2?:  string;
-   zipCode:    string;
-   city:       string;
-   country:    string;
-   phone:      string;
-}
-
-interface Prop {
-   children: ReactNode;
 }
 
 const CART_INITIAL_STATE: CartState = {
@@ -77,9 +65,14 @@ export const CartProvider:FC<Prop> = ({ children }) => {
       dispatch({ type: '[Cart] - Update order summary', payload: orderSummary });
 
    }, [state.cart]);
-   
-   
 
+   useEffect( () => {
+      const cookieAddress:ShippingAddress = Cookie.get('addressData') ? JSON.parse( Cookie.get('addressData')! ) : undefined;
+
+      if( cookieAddress )
+         dispatch({ type: '[Cart] - LoadAddress from cookies', payload: cookieAddress });
+   }, []);
+   
    const addProductToCart = async (product: ICartProduct) => {
 
       //si son ids diferentes
@@ -111,6 +104,11 @@ export const CartProvider:FC<Prop> = ({ children }) => {
       dispatch({ type: '[Cart] - Remove product in cart', payload: product });
    }
 
+   const updateShippingAddress = (address: ShippingAddress) => {
+      Cookie.set('addressData', JSON.stringify( address ));
+      dispatch({ type: '[Cart] - Update Address', payload: address });
+   }
+
    return (
    <CartContext.Provider value={{
        ...state,
@@ -119,6 +117,7 @@ export const CartProvider:FC<Prop> = ({ children }) => {
        addProductToCart,
        removeCartProduct,
        updateCartQuantity,
+       updateShippingAddress,
        
    }}>
        { children }

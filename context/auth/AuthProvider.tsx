@@ -1,5 +1,6 @@
 import { FC, ReactNode, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 
 import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
@@ -28,12 +29,21 @@ const AUTH_INITIAL_STATE: AuthState = {
 export const AuthProvider:FC<Prop> = ({ children }) => {
 
    const [state, dispatch] = useReducer( authReducer, AUTH_INITIAL_STATE );
+   const { data, status } = useSession();
    const router = useRouter();
 
-   //check token en primer render
-    useEffect(() => {
-        checkToken();
-    }, []);
+   useEffect( () => {
+       if(status === 'authenticated'){
+            // console.log({ user: data?.user });
+            dispatch({ type: '[Auth] - Login', payload: data?.user as IUser });
+       }
+   }, [status, data]);
+
+    //check token en primer render
+    // Autenticacion personalizada, no usada cambiada por next-auth
+    // useEffect(() => {
+    //     checkToken();
+    // }, []);
     
     const loginUser = async (email: string, password: string): Promise<boolean> => {
         try {
@@ -96,10 +106,13 @@ export const AuthProvider:FC<Prop> = ({ children }) => {
     }
 
     const logoutUser = () => {
-        Cookies.remove('token');
         Cookies.remove('cart');
+        Cookies.remove('addressData');
 
-        router.reload();
+        signOut();
+        
+        // router.reload();
+        // Cookies.remove('token');
 
         // dispatch({ type: '[Auth] - Logout' });
     }

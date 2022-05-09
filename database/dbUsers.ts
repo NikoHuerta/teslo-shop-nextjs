@@ -29,7 +29,7 @@ export const checkUserEmailPassword = async ( loginEmail: string = '', password:
 }
 
 //Crea  o verifica el usuario de OAuth
-export const oAuthToDbUser = async ( oAuthEmail: string, oAuthName: string ) => {
+export const oAuthToDbUser = async ( oAuthEmail: string, oAuthName: string, origin: string ) => {
 
     await db.connect();
     const user = await User.findOne({ email: oAuthEmail }).lean();
@@ -44,6 +44,7 @@ export const oAuthToDbUser = async ( oAuthEmail: string, oAuthName: string ) => 
         name: oAuthName,
         email: oAuthEmail,
         password: ':P',
+        origin,
         role: 'client',
     });
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 
 import { useForm } from 'react-hook-form';
@@ -43,10 +43,18 @@ const AddressPage = () => {
 
     const router = useRouter();
     const { updateShippingAddress } = useContext( CartContext );
-
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         defaultValues: getAddressFromCookies()
     });
+    const [defaultCountry, setDefaultCountry] = useState('');
+
+
+    useEffect(() => {
+        const addressFromCookies = getAddressFromCookies();
+        reset(getAddressFromCookies());
+        setDefaultCountry(addressFromCookies.country);
+    }, [reset, getAddressFromCookies]);
+
 
     const onAddressSubmit = ( data: FormData ) =>{
         updateShippingAddress( data );
@@ -131,31 +139,35 @@ const AddressPage = () => {
 
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                        <TextField
-                            // key={ Cookies.get('country') || countries[0].code}
-                            
-                            select
-                            variant='filled'
-                            label='Country'
-                            // defaultValue={ Cookies.get('country') || countries[0].code }
-                            defaultValue={ countries[0].code }
-                            {...register('country', {
-                                required: 'Country is required',
-                            })}
-                            error={ !! errors.country }
-                            //helperText={ errors.country?.message }
-                        >
                         {
-                            countries.map( (country, index) => (
-                                <MenuItem 
-                                    key={ index } 
-                                    value={ country.code }
-                                    
-                                >{ country.name }
-                                </MenuItem>
-                            ))
+                            !!defaultCountry && (
+                                <TextField
+                                    select
+                                    variant='filled'
+                                    fullWidth
+                                    label='Country'
+                                    defaultValue={ defaultCountry }
+                                    // defaultValue={ countries[0].code }
+                                    {...register('country', {
+                                        required: 'Country is required',
+                                    })}
+                                    error={ !! errors.country }
+                                    // helperText={ errors.country?.message }
+                                >
+                                {
+                                    countries.map( (country, index) => (
+                                        <MenuItem 
+                                            key={ country.code } 
+                                            value={ country.code }
+                                            
+                                        >{ country.name }
+                                        </MenuItem>
+                                    ))
+                                }
+                                </TextField>
+                            )
                         }
-                        </TextField>
+                        
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>

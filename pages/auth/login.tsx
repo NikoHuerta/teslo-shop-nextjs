@@ -7,6 +7,10 @@ import { getSession, getProviders, signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { Box, Button, Chip, Grid, Link, TextField, Typography, Divider } from '@mui/material';
 import { ErrorOutline, LoopOutlined } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GoogleIcon from '@mui/icons-material/Google';
+
 
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
@@ -14,13 +18,6 @@ import { validations } from '../../utils';
 type FormData = {
     email: string;
     password: string;
-}
-
-type loginNextResp = {
-    error: string | null;
-    status: number;
-    ok: boolean;
-    url: string;
 }
 
 const LoginPage = () => {
@@ -155,10 +152,20 @@ const LoginPage = () => {
                                             variant='outlined'
                                             fullWidth
                                             color='primary'
-                                            sx={{ mb: 1 }}
+                                            sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center'  }}
                                             onClick={ () => signIn( provider.id ) }
-                                        >
-                                            { provider.name }
+                                        >   
+                                            
+                                            { provider.id === 'github' 
+                                                ?  <GitHubIcon />
+                                                : provider.id === 'facebook' 
+                                                    ? <FacebookIcon />
+                                                    : provider.id === 'google' ?
+                                                        <GoogleIcon />
+                                                        : null
+                                            }
+                                            <Typography variant='body2' color='primary' sx={{ ml: 5 }}>{ provider.name }</Typography>
+                                            
                                         </Button>
                                     )
                                 })

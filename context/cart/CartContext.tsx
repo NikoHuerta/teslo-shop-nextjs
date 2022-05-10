@@ -17,6 +17,9 @@ interface ContextProps{
     updateCartQuantity: (product: ICartProduct) => void;
     removeCartProduct: (product: ICartProduct) => void;
     updateShippingAddress: (address: ShippingAddress) => void;
+
+    //ORDERS
+    createOrder: () => Promise<void>;
     
 }
 

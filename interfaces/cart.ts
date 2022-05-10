@@ -2,13 +2,13 @@ import { ISize, IGender } from ".";
 
 export interface ICartProduct {
     _id: string;
-    images: string;
-    price: number;
-    size?: ISize;
-    slug: string;
     title: string;
+    size?: ISize;
     gender: IGender;
     quantity: number;
+    slug: string;
+    images: string;
+    price: number;
 }
  
 export interface ShippingAddress{

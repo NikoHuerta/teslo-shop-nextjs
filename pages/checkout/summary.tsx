@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 const SummaryPage = () => {
 
     const router = useRouter();
-    const { shippingAddress, numberOfItems } = useContext( CartContext );
+    const { shippingAddress, numberOfItems, createOrder } = useContext( CartContext );
     // console.log(shippingAddress);
 
     useEffect(() => {
@@ -23,6 +23,10 @@ const SummaryPage = () => {
             router.push('/checkout/address');
         }
     }, [router]);
+
+    const onCreateOrder = async () => {
+        createOrder();
+    }
     
 
 
@@ -85,7 +89,12 @@ const SummaryPage = () => {
                         
 
                         <Box sx={{ mt: 3 }}>
-                            <Button color='secondary' className='circular-btn' fullWidth>
+                            <Button 
+                                color='secondary' 
+                                className='circular-btn' 
+                                fullWidth
+                                onClick={ onCreateOrder }
+                            >
                                 Confirm Order
                             </Button>
                         </Box>

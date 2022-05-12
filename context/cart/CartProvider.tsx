@@ -1,5 +1,6 @@
 import { FC, ReactNode, useEffect, useReducer } from 'react';
 import Cookie from 'js-cookie';
+import axios, { AxiosError } from 'axios';
 
 import { CartContext, cartReducer } from '.';
 import { ICartProduct, IOrder, ShippingAddress } from '../../interfaces';
@@ -7,6 +8,15 @@ import { tesloAPI } from '../../api';
 
 interface Prop {
    children: ReactNode;
+}
+
+type ServerError = { message: string };
+
+
+type ResponseDataCreateOrder = {
+   ok: boolean;
+   message?: string;
+   order?: IOrder;
 }
 
 export interface CartState {
@@ -110,32 +120,53 @@ export const CartProvider:FC<Prop> = ({ children }) => {
       dispatch({ type: '[Cart] - Update Address', payload: address });
    }
 
-   const createOrder = async() => {
+   const createOrder = async():Promise<{ hasError: boolean; message: string; }> => {
+      
+      if( !state.shippingAddress ){
+         throw new Error('No shipping address');
+      }
+
+      const body: IOrder = {
+         orderItems: state.cart.map( p => ({
+            ...p,
+            size: p.size!,
+         }) ),
+         shippingAddress: state.shippingAddress,
+         billingAddress: state.shippingAddress,
+         numberOfItems: state.numberOfItems,
+         subTotal: state.subTotal,
+         tax: state.tax,
+         total: state.total,
+         isPaid: false,
+      }
+
       try{
+
+         const { data } = await tesloAPI.post<ResponseDataCreateOrder>('/orders', body);
          
-         if( !state.shippingAddress ){
-            throw new Error('No shipping address');
+         dispatch({ type: '[Cart] - Order Complete'});
+         // console.log({ data });
+         //TODO: Dispatch action to clear cart
+         return {
+            hasError: false,
+            message: data.order?._id!,
          }
 
-         const body: IOrder = {
-            orderItems: state.cart.map( p => ({
-               ...p,
-               size: p.size!,
-            }) ),
-            shippingAddress: state.shippingAddress,
-            billingAddress: state.shippingAddress,
-            numberOfItems: state.numberOfItems,
-            subTotal: state.subTotal,
-            tax: state.tax,
-            total: state.total,
-            isPaid: false,
+      } catch(error){
+         // console.log(error);
+         if(axios.isAxiosError(error)){
+            const serverError = error as AxiosError<ServerError>;
+            return {
+               hasError: true,
+               message: serverError.response?.data.message!
+            }
          }
 
-         const { data } = await tesloAPI.post('/orders', body);
-         console.log({ data });
+         return {
+            hasError: true,
+            message: 'Uncontrolled error, please contact the administrator'
+         }
 
-      }catch(error){
-         console.log(error);
       }
    }
 

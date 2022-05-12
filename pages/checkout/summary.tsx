@@ -1,21 +1,24 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
-import { Box, Button, Card, CardContent, Divider, Grid, Link, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Chip, Divider, Grid, Link, Typography } from '@mui/material';
+import Cookies from 'js-cookie';
 
 import { CartList, OrderSummary } from '../../components/cart';
 import { CartContext } from '../../context';
 import { ShopLayout } from '../../components/layouts';
 import { ShippingAddress } from '../../interfaces';
 import  { countries } from '../../utils';
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
 
 
 const SummaryPage = () => {
 
     const router = useRouter();
     const { shippingAddress, numberOfItems, createOrder } = useContext( CartContext );
+
+    const [isPosting, setIsPosting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     // console.log(shippingAddress);
 
     useEffect(() => {
@@ -25,7 +28,18 @@ const SummaryPage = () => {
     }, [router]);
 
     const onCreateOrder = async () => {
-        createOrder();
+        setIsPosting(true);
+        const { hasError, message }  = await createOrder(); 
+        
+        if( hasError ){
+            setIsPosting(false);
+            setErrorMessage( message );
+            return;
+            
+        } else {
+
+            router.replace(`/orders/${ message }`);
+        }
     }
     
 
@@ -88,15 +102,22 @@ const SummaryPage = () => {
                         <OrderSummary />
                         
 
-                        <Box sx={{ mt: 3 }}>
+                        <Box sx={{ mt: 3 }} display='flex' flexDirection='column'>
                             <Button 
                                 color='secondary' 
                                 className='circular-btn' 
                                 fullWidth
                                 onClick={ onCreateOrder }
+                                disabled={ isPosting }
                             >
                                 Confirm Order
                             </Button>
+
+                            <Chip 
+                                color='error'
+                                label={ errorMessage }
+                                sx={{ mt: 2 , display: errorMessage ? 'flex' : 'none' }}
+                            />
                         </Box>
 
                     </CardContent>

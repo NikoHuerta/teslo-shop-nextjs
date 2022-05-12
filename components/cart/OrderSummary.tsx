@@ -1,12 +1,22 @@
-import { useContext } from "react"
+import { FC, useContext } from "react"
 
 import { Grid, Typography } from "@mui/material"
 import { CartContext } from "../../context"
 import { currency } from "../../utils";
 
-export const OrderSummary = () => {
+interface Props {
+    orderData?: {
+        numberOfItems : number;
+        subTotal      : number;
+        total         : number;
+        tax           : number;
+    }
+}
 
-    const { numberOfItems, subTotal, total, tax } = useContext(CartContext);
+export const OrderSummary:FC<Props> = ({ orderData }) => {
+    
+    const { numberOfItems, subTotal, total, tax } = orderData ? orderData : useContext(CartContext);
+
 
   return (
     <Grid container>

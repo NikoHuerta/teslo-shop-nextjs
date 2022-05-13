@@ -70,7 +70,7 @@ export const CartProvider:FC<Prop> = ({ children }) => {
          numberOfItems,
          subTotal,
          tax: subTotal * taxRate,
-         total: subTotal * (1 + taxRate),
+         total: subTotal + (subTotal * taxRate),
       }
 
       dispatch({ type: '[Cart] - Update order summary', payload: orderSummary });

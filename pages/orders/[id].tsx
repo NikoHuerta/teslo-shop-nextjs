@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next'
-import NextLink from 'next/link';
 import { getSession } from 'next-auth/react';
 
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Box, Card, CardContent, Chip, Divider, Grid, Link, Typography } from '@mui/material';
 import { CreditCardOffOutlined, CreditScoreOutlined } from '@mui/icons-material';
 
@@ -47,10 +47,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
             )
         }
 
-
-          
-
-        <Grid container sx={{ mt:3 }}>
+        <Grid container sx={{ mt:3 }} className='fadeIn'>
             <Grid item xs={12} sm={7}>
 
                 {/* Cart List */}
@@ -110,7 +107,26 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                                 ) 
                                 : 
                                 (
-                                    <h1>Pay</h1>
+                                    <PayPalButtons
+                                        createOrder={(data, actions) => {
+                                            return actions.order.create({
+                                                purchase_units: [
+                                                    {
+                                                        amount: {
+                                                            value: `${ order.total }`,
+                                                        },
+                                                    },
+                                                ],
+                                            });
+                                        }}
+                                        onApprove={(data, actions) => {
+                                            return actions.order!.capture().then((details) => {
+                                                console.log({ details });
+                                                const name = details.payer.name!.given_name;
+                                                
+                                            });
+                                        }}
+                                    />
                                 )
                             }
 
@@ -142,7 +158,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     }
 
     const order = await dbOrders.getOrderById( id.toString() );
-
     if( !order ){
         //order not found
         return {
@@ -152,7 +167,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             }
         }
     }
-
     if( order.user !== session.user._id ){
         //usuario tiene que ser el mismo que el de la orden
         return {
@@ -162,7 +176,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             }
         }
     }
-
+    //todo bien
     return {
         props: {
             order

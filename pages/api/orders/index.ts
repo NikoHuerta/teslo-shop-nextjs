@@ -56,12 +56,17 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         const backendTotal = subTotal + (subTotal * taxRate);
 
         if ( backendTotal !== total ){
+            console.log({backendTotal}, {total});
+
             throw new Error('The total does not match with the prices.');
         }
 
         //Todo bien hasta el momento, se puede crear el pedido
         const userId = session.user._id;
         const newOrder = new Order({ ...req.body, isPaid: false, user: userId});
+        //siempre se va a tener 2 decimales
+        newOrder.total = Math.round(newOrder.total * 100) / 100;
+
         await newOrder.save();
         await db.disconnect();
 

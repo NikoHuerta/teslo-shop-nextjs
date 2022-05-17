@@ -5,7 +5,7 @@ import { AccessTimeOutlined, AttachMoneyOutlined, CancelPresentationOutlined, Ca
 import { Grid, Typography } from '@mui/material'
 import { SummaryTile } from '../../components/admin'
 
-import { AdminLayout } from '../../components/layouts/AdminLayout'
+import { AdminLayout } from '../../components/layouts'
 import { DashboardSummaryResponse } from '../../interfaces';
 
 const DashboardPage = () => {
@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const [refreshIn, setRefreshIn] = useState(30);
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('Tick');
+      // console.log('Tick');
       setRefreshIn(refreshIn => refreshIn > 0 ? refreshIn - 1 : 30);
     }, 1000);
   
@@ -45,7 +45,6 @@ const DashboardPage = () => {
         title='Dashboard'
         subTitle='General information about the shop'
         icon={<DashboardOutlined />}
-
     >
         <Grid container spacing={2}>
 

@@ -26,6 +26,7 @@ interface SeedUser {
     email: string;
     password: string;
     role: Role;
+    origin: string;
 }
 
 type Role = 'admin'|'client';
@@ -39,19 +40,22 @@ export const initialData: SeedData = {
             name:       'Nicolas Huerta',
             email:      'nicolas@huerta.com',
             password:   bcrypt.hashSync('123456'),
-            role:       'admin'
+            role:       'admin',
+            origin:     'web'
         },
         {
             name:       'Amparo Huerta',
             email:      'amparo@huerta.com',
             password:   bcrypt.hashSync('123456'),
-            role:       'client'
+            role:       'client',
+            origin:     'web'
         },
         {
             name:       'Nathalie Aranda',
             email:      'nathalie@aranda.com',
             password:   bcrypt.hashSync('123456'),
-            role:       'client'
+            role:       'client',
+            origin:     'web'
         }
     ],
     products: [

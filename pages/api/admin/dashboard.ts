@@ -16,12 +16,11 @@ type Data = {
     } | string;
 }
 
-export default async function handler (req: NextApiRequest, res: NextApiResponse<Data>) {
+export default function handler (req: NextApiRequest, res: NextApiResponse<Data>) {
     
     switch (req.method){
         case 'GET':
-            await getDashboardData(req, res);
-            break;
+            return getDashboardData(req, res);
         
         default:
             res.status(400).json({ ok: false, data: 'Bad Request' });

@@ -53,7 +53,7 @@ const AddressPage = () => {
         const addressFromCookies = getAddressFromCookies();
         reset(getAddressFromCookies());
         setDefaultCountry(addressFromCookies.country);
-    }, [reset, getAddressFromCookies]);
+    }, [ reset ]);
 
 
     const onAddressSubmit = ( data: FormData ) =>{

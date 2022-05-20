@@ -15,7 +15,8 @@ interface Props {
 
 export const OrderSummary:FC<Props> = ({ orderData }) => {
     
-    const { numberOfItems, subTotal, total, tax } = orderData ? orderData : useContext(CartContext);
+    const orderDataContext = useContext(CartContext);
+    const { numberOfItems, subTotal, total, tax } = orderData ? orderData : orderDataContext;
 
 
   return (

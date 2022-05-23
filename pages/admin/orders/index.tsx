@@ -75,7 +75,8 @@ const OrdersPage = () => {
 
   return (
     <AdminLayout 
-      title='Orders'
+      title={ `Orders (${ data?.orders!.length })` }
+      // title='Orders'
       subTitle='Manage orders' 
       icon={ <ConfirmationNumberOutlined /> }
       >

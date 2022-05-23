@@ -102,7 +102,7 @@ const UsersPage = () => {
 
   return (
     <AdminLayout
-        title='Users'
+        title={ `Users (${ users.length })` }
         subTitle='Manage users'
         icon={<PeopleOutline />}
     >

@@ -12,8 +12,11 @@ export const getProductsBySlug = async (slug: string): Promise<IProduct | null> 
         return null;
     }
 
+    //TODO:
+    // un procesamiento de las imagenes cuando las subamos al server
+
     return JSON.parse( JSON.stringify(product) );
-    
+
 }
 
 interface ProductSlug{

@@ -6,6 +6,7 @@ import { Grid, Typography } from '@mui/material'
 import { SummaryTile } from '../../components/admin'
 
 import { AdminLayout } from '../../components/layouts'
+import { FullScreenLoading } from '../../components/ui';
 import { DashboardSummaryResponse } from '../../interfaces';
 
 const DashboardPage = () => {
@@ -29,7 +30,7 @@ const DashboardPage = () => {
 
 
   if( !error && !data ) {
-    return <div>Loading...</div>
+    return <FullScreenLoading />
   }
 
   if( error ) {

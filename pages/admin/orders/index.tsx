@@ -8,6 +8,7 @@ import useSWR from "swr";
 import moment from 'moment';
 
 import { AdminLayout } from "../../../components/layouts"
+import { FullScreenLoading } from '../../../components/ui';
 import { IOrder, IUser } from "../../../interfaces";
 
 const columns: GridColDef[] = [
@@ -53,7 +54,7 @@ const OrdersPage = () => {
 
   const { data, error } = useSWR<ordersResponse>('/api/admin/orders', { });
 
-  if ( !error && !data )  return (<div>Loading...</div>);
+  if ( !error && !data )  return (<FullScreenLoading />);
 
   if( error ) {
     console.log(error);

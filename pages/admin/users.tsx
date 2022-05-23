@@ -6,6 +6,7 @@ import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 import { AdminLayout } from '../../components/layouts';
+import { FullScreenLoading } from '../../components/ui';
 import { IUser } from '../../interfaces';
 import { tesloAPI } from '../../api';
 
@@ -28,7 +29,7 @@ const UsersPage = () => {
     }, [ data ]);
 
     if( !error && !data ) {
-        return (<div>Loading...</div>);
+        return (<FullScreenLoading />);
     }
 
     if( error ) {

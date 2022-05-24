@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 
-import { CategoryOutlined } from "@mui/icons-material"
-import { Grid, Typography, CardMedia, Link } from "@mui/material"
+import { AddOutlined, CategoryOutlined } from "@mui/icons-material"
+import { Grid, Typography, CardMedia, Link, Box, Button } from "@mui/material"
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import useSWR from "swr";
 
@@ -88,6 +88,17 @@ const ProductsPage = () => {
       subTitle='Manage products' 
       icon={  <CategoryOutlined /> }
       >
+      
+      <Box display='flex' justifyContent='end' sx={{ mb: 2 }} >
+        <Button
+          startIcon={ <AddOutlined /> }
+          color='secondary'
+          href='/admin/products/new'
+        >
+          Create Product
+        </Button>
+      </Box>
+
 
       <Grid container className='fadeIn'>
         <Grid item xs={12} sx={{ height:650, width:'100%' }}>

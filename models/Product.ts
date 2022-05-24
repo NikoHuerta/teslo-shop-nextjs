@@ -5,7 +5,8 @@ import { IProduct } from '../interfaces';
 const productSchema = new Schema({
     description:{
         type: String,
-        required: true
+        required: true,
+        default: ''
     },
     images: [{
         type: String,
@@ -39,21 +40,24 @@ const productSchema = new Schema({
     }],
     title:{
         type: String,
-        required: true
+        required: true,
+        default: ''
     },
     type:{
         type: String,
         enum:{
             values: ['shirts','pants','hoodies','hats'],
             message: '{VALUE} is not a valid type'
-        }
+        },
+        default: 'shirts'
     },
     gender:{
         type: String,
         enum:{
             values: ['men','women','kid','unisex'],
             message: '{VALUE} is not a valid gender'
-        }
+        },
+        default: 'women'
     },
 }, {
     timestamps: true

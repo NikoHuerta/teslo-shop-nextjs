@@ -185,7 +185,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       product
     },
-    revalidate: 86400 //cada dia se vuelve a revalidar la data (60 segundos * 60 minutos * 24 horas)
+    // revalidate: 86400 //cada dia se vuelve a revalidar la data (60 segundos * 60 minutos * 24 horas)
+    revalidate: 1800 //cada dia se vuelve a revalidar la data (30 minutos)
   }
 }
 

@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
 import { DriveFileRenameOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
@@ -8,6 +9,8 @@ import { Box, Button, capitalize, Card, CardActions, CardMedia, Checkbox, Chip, 
 import { AdminLayout } from '../../../components/layouts'
 import { IGender, IProduct, ISize, IType } from '../../../interfaces';
 import { dbProducts } from '../../../database';
+import { tesloAPI } from '../../../api';
+import { Product } from '../../../models';
 
 
 const validTypes  = ['shirts','pants','hoodies','hats']
@@ -34,7 +37,9 @@ interface Props {
 
 const ProductAdminPage:FC<Props> = ({ product }) => {
 
+    const router = useRouter();
     const [newTagValue, setNewTagValue] = useState('');
+    const [isSaving, setIsSaving] = useState( false );
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch } = useForm<FormData>({
         defaultValues: product
@@ -84,14 +89,43 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
         setValue('tags', updatedTags, { shouldValidate: true });
     }
 
-    const onSubmitForm = ( form: FormData ) => {
-        console.log({ form });
+    const onSubmitForm = async ( form: FormData ) => {
+        // console.log({ form });
+        
+        if( form.images.length < 2 ) 
+            return alert('Please upload at least 2 images.');
+
+        setIsSaving( true );
+
+        try {
+
+            //si no hay id, es un nuevo producto
+            //si hay id, es un update producto 
+            const { data } = await tesloAPI({
+                url: '/admin/products',
+                method: form._id ? 'PUT' : 'POST',
+                data: form
+            });
+            // console.log({ data });
+
+            if( !form._id ) {
+                setIsSaving( false );
+                router.replace(`/admin/products/${ form.slug }`);
+            }
+
+            setIsSaving( false );
+
+        } catch ( error ) {
+            console.log({ error });
+        }
+
+
     }
 
     return (
         <AdminLayout 
-            title={'Producto'} 
-            subTitle={`Editando: ${ product.title }`}
+            title={'Product'} 
+            subTitle={`Edit: ${ product.title }`}
             icon={ <DriveFileRenameOutline /> }
         >
             <form onSubmit={ handleSubmit( onSubmitForm ) }>
@@ -101,8 +135,9 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                         startIcon={ <SaveOutlined /> }
                         sx={{ width: '150px' }}
                         type="submit"
+                        disabled={ isSaving }
                         >
-                        Guardar
+                        Save
                     </Button>
                 </Box>
 
@@ -275,20 +310,21 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                         <Divider sx={{ my: 2  }}/>
                         
                         <Box display='flex' flexDirection="column">
-                            <FormLabel sx={{ mb: 1 }}>Imágenes</FormLabel>
+                            <FormLabel sx={{ mb: 1 }}>Images</FormLabel>
                             <Button
                                 color="secondary"
                                 fullWidth
                                 startIcon={ <UploadOutlined /> }
                                 sx={{ mb: 3 }}
                             >
-                                Cargar imagen
+                                Upload Image
                             </Button>
 
                             <Chip 
-                                label="Es necesario al 2 imagenes"
+                                label="At least 2 images are required"
                                 color='error'
                                 variant='outlined'
+                                sx={{ mb: 1 }}
                             />
 
                             <Grid container spacing={2}>
@@ -304,7 +340,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                                                 />
                                                 <CardActions>
                                                     <Button fullWidth color="error">
-                                                        Borrar
+                                                        Delete
                                                     </Button>
                                                 </CardActions>
                                             </Card>
@@ -330,8 +366,18 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     
     const { slug = ''} = query;
+    let product: IProduct | null;
     
-    const product = await dbProducts.getProductsBySlug(slug.toString());
+    if ( slug === 'new' ){
+        //crear un producto
+        const tempProduct = JSON.parse( JSON.stringify( new Product() ) );
+        delete tempProduct._id;
+        tempProduct.images = ['img1.jpg', 'img2.jpg'];
+        product = tempProduct;
+
+    } else {
+        product = await dbProducts.getProductsBySlug(slug.toString());
+    }
 
     if ( !product ) {
         return {

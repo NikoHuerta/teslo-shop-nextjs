@@ -5,6 +5,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { SWRConfig } from 'swr';
+import { SnackbarProvider } from 'notistack';
 
 import { lightTheme } from '../themes';
 import { AuthProvider, CartProvider, UIProvider } from '../context';
@@ -24,9 +25,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           <CartProvider>
             <UIProvider>
               <ThemeProvider theme={ lightTheme }>
-                <CssBaseline />
-                <Component {...pageProps} />
-              
+                <SnackbarProvider maxSnack={3}>
+                  <CssBaseline />
+                  <Component {...pageProps} />
+                </SnackbarProvider>
               </ThemeProvider>
             </UIProvider>
           </CartProvider>

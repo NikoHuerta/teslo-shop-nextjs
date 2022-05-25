@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 
 import { DriveFileRenameOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
 import { Box, Button, capitalize, Card, CardActions, CardMedia, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, ListItem, Paper, Radio, RadioGroup, TextField } from '@mui/material';
@@ -40,6 +41,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     const router = useRouter();
     const [newTagValue, setNewTagValue] = useState('');
     const [isSaving, setIsSaving] = useState( false );
+    const { enqueueSnackbar } = useSnackbar();
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch } = useForm<FormData>({
         defaultValues: product
@@ -114,6 +116,14 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
             }
 
             setIsSaving( false );
+            enqueueSnackbar('Product saved.', { 
+                variant: 'success',
+                autoHideDuration: 2000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                }
+             });
 
         } catch ( error ) {
             console.log({ error });

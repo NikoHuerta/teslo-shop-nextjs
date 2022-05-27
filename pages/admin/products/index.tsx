@@ -20,7 +20,8 @@ const columns: GridColDef[] = [
                     component='img'
                     alt={ row.title }
                     className='fadeIn'
-                    image={ `/products/${ row.img }` }
+                    image= { row.img }
+                    // image={ `/products/${ row.img }` }
                 />
             </a>
         )

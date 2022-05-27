@@ -1,11 +1,11 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, FormEvent, useEffect, useRef, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 
 import { DriveFileRenameOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
-import { Box, Button, capitalize, Card, CardActions, CardMedia, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, ListItem, Paper, Radio, RadioGroup, TextField } from '@mui/material';
+import { Box, Button, capitalize, Card, CardActions, CardMedia, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, Input, ListItem, Paper, Radio, RadioGroup, TextField, InputLabel } from '@mui/material';
 
 import { AdminLayout } from '../../../components/layouts'
 import { IGender, IProduct, ISize, IType } from '../../../interfaces';
@@ -39,6 +39,7 @@ interface Props {
 const ProductAdminPage:FC<Props> = ({ product }) => {
 
     const router = useRouter();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [newTagValue, setNewTagValue] = useState('');
     const [isSaving, setIsSaving] = useState( false );
     const { enqueueSnackbar } = useSnackbar();
@@ -89,6 +90,40 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     const onDeleteTag = ( tag: string ) => {
         const updatedTags = getValues('tags').filter( t => t !== tag );
         setValue('tags', updatedTags, { shouldValidate: true });
+    }
+
+    const onFilesSelected = async ( { currentTarget }: FormEvent<HTMLInputElement | HTMLTextAreaElement> ) => {
+        
+        if( !(currentTarget as HTMLInputElement).files || (currentTarget as HTMLInputElement).files!.length === 0 ) {
+            return;
+        }
+        
+        const files = (currentTarget as HTMLInputElement).files;
+        // console.log(files);
+        try { 
+
+            for( const file of files! ) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const { data } = await tesloAPI.post<{ ok: boolean; message: string }>('/admin/uploads', formData);
+                // console.log( data.message );
+                setValue('images', [ ...getValues('images'), data.message ], { shouldValidate: true });
+            }
+        
+        } catch ( error: any ) {
+            console.log({ error });
+        }
+        // if( files ) {
+        //     const images = Array.from(files).map( file => file.name );
+        //     setValue('images', images, { shouldValidate: true });
+        // }
+    }
+
+    const onDeleteImage = ( image: string ) => {
+        setValue('images',
+            getValues('images').filter( img => img !== image ),
+            { shouldValidate: true }
+        );
     }
 
     const onSubmitForm = async ( form: FormData ) => {
@@ -326,9 +361,26 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                                 fullWidth
                                 startIcon={ <UploadOutlined /> }
                                 sx={{ mb: 3 }}
+                                onClick={ () => fileInputRef.current!.click() }
                             >
                                 Upload Image
                             </Button>
+
+                            <Input 
+                                inputRef={ fileInputRef }
+                                inputProps={{
+                                    accept: "image/png, image/gif, image/jpeg, image/jpg",
+                                    multiple: true,
+                                }}
+                                type="file"
+                                sx={{ display: 'none' }}
+                                onChange={ onFilesSelected }
+                            />
+                            {/* <input 
+                                type="file"
+                                multiple
+                                accept='image/png, image/gif, image/jpeg, image/jpg'
+                            /> */}
 
                             <Chip 
                                 label="At least 2 images are required"
@@ -339,17 +391,21 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
 
                             <Grid container spacing={2}>
                                 {
-                                    product.images.map( img => (
+                                    getValues('images').map( img => (
                                         <Grid item xs={4} sm={3} key={img}>
                                             <Card>
                                                 <CardMedia 
                                                     component='img'
                                                     className='fadeIn'
-                                                    image={ `/products/${ img }` }
+                                                    image={ img }
                                                     alt={ img }
                                                 />
                                                 <CardActions>
-                                                    <Button fullWidth color="error">
+                                                    <Button 
+                                                        fullWidth 
+                                                        color="error"
+                                                        onClick={ () => onDeleteImage( img ) }
+                                                    >
                                                         Delete
                                                     </Button>
                                                 </CardActions>
@@ -382,7 +438,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         //crear un producto
         const tempProduct = JSON.parse( JSON.stringify( new Product() ) );
         delete tempProduct._id;
-        tempProduct.images = ['img1.jpg', 'img2.jpg'];
+        tempProduct.images = ['https://res.cloudinary.com/nhf/image/upload/v1653683600/teslo-shop/qswf5aelegcrlo6or3hb.png'];
         product = tempProduct;
 
     } else {

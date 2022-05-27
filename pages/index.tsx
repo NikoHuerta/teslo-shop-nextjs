@@ -12,6 +12,7 @@ import { ProductList } from '../components/products';
 const HomePage: NextPage = () => {
 
   const { products, isLoading } = useProducts('/products');
+  // console.log(products);
 
   return (
     <ShopLayout title={'Teslo-Shop - Home'} pageDescription={'Find the best Teslo products here'}>

@@ -14,9 +14,9 @@ import { tesloAPI } from '../../../api';
 import { Product } from '../../../models';
 
 
-const validTypes  = ['shirts','pants','hoodies','hats']
-const validGender = ['men','women','kid','unisex']
-const validSizes = ['XS','S','M','L','XL','XXL','XXXL']
+const validTypes  = ['shirts','pants','hoodies','hats'];
+const validGender = ['men','women','kid','unisex'];
+const validSizes = ['XS','S','M','L','XL','XXL','XXXL','UNIQUE'];
 
 interface FormData {
     _id?        : string;
@@ -42,11 +42,18 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [newTagValue, setNewTagValue] = useState('');
     const [isSaving, setIsSaving] = useState( false );
+    const [numImages, setNumImages] = useState( 2 );
     const { enqueueSnackbar } = useSnackbar();
+
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch } = useForm<FormData>({
         defaultValues: product
     });
+
+    useEffect( () => {
+        setNumImages( product.images.length );
+    }, []);
+
 
     useEffect(() => {
         const subscription = watch((value, { name, type }) => {
@@ -62,7 +69,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
             }
         });
       return () => subscription.unsubscribe();
-    }, [watch, setValue]);
+    }, [watch, setValue]);  
     
 
     const onChangeSize = ( size: string ) => {
@@ -108,6 +115,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 const { data } = await tesloAPI.post<{ ok: boolean; message: string }>('/admin/uploads', formData);
                 // console.log( data.message );
                 setValue('images', [ ...getValues('images'), data.message ], { shouldValidate: true });
+                setNumImages( numImages + 1 );
             }
         
         } catch ( error: any ) {
@@ -124,13 +132,21 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
             getValues('images').filter( img => img !== image ),
             { shouldValidate: true }
         );
+        setNumImages( numImages - 1 );
     }
 
     const onSubmitForm = async ( form: FormData ) => {
         // console.log({ form });
         
         if( form.images.length < 2 ) 
-            return alert('Please upload at least 2 images.');
+            return enqueueSnackbar('Please upload at least 2 images.', { 
+                variant: 'error',
+                autoHideDuration: 2000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                }
+             });
 
         setIsSaving( true );
 
@@ -168,6 +184,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     }
 
     return (
+
         <AdminLayout 
             title={'Product'} 
             subTitle={`Edit: ${ product.title }`}
@@ -381,13 +398,17 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                                 multiple
                                 accept='image/png, image/gif, image/jpeg, image/jpg'
                             /> */}
+                            {
+                                numImages < 2 &&
+                                <Chip 
+                                    label="At least 2 images are required"
+                                    color='error'
+                                    variant='outlined'
+                                    sx={{ mb: 1 }}
+                                />
+                            }
 
-                            <Chip 
-                                label="At least 2 images are required"
-                                color='error'
-                                variant='outlined'
-                                sx={{ mb: 1 }}
-                            />
+                            
 
                             <Grid container spacing={2}>
                                 {
@@ -439,6 +460,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         const tempProduct = JSON.parse( JSON.stringify( new Product() ) );
         delete tempProduct._id;
         tempProduct.images = ['https://res.cloudinary.com/nhf/image/upload/v1653683600/teslo-shop/qswf5aelegcrlo6or3hb.png'];
+        tempProduct.sizes = ['UNIQUE'];
         product = tempProduct;
 
     } else {

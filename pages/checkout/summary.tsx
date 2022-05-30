@@ -15,7 +15,7 @@ import  { countries } from '../../utils';
 const SummaryPage = () => {
 
     const router = useRouter();
-    const { shippingAddress, numberOfItems, createOrder } = useContext( CartContext );
+    const { shippingAddress, numberOfItems, createOrder, cleanCart } = useContext( CartContext );
 
     const [isPosting, setIsPosting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -37,8 +37,8 @@ const SummaryPage = () => {
             return;
             
         } else {
-
             router.replace(`/orders/${ message }`);
+            cleanCart();
         }
     }
     

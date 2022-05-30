@@ -20,6 +20,7 @@ interface ContextProps{
 
     //ORDERS
     createOrder: () => Promise<{ hasError: boolean; message: string; }>;
+    cleanCart: () => void;
     
 }
 

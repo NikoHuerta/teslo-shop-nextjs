@@ -144,7 +144,8 @@ export const CartProvider:FC<Prop> = ({ children }) => {
 
          const { data } = await tesloAPI.post<ResponseDataCreateOrder>('/orders', body);
          
-         dispatch({ type: '[Cart] - Order Complete'});
+         // no usar aqui para que no se vea en blanco los datos al hacer submit
+         // dispatch({ type: '[Cart] - Order Complete'});
 
          return {
             hasError: false,
@@ -169,6 +170,10 @@ export const CartProvider:FC<Prop> = ({ children }) => {
       }
    }
 
+   const cleanCart = () => {
+      dispatch({ type: '[Cart] - Order Complete'});
+   }
+
    return (
    <CartContext.Provider value={{
        ...state,
@@ -178,8 +183,9 @@ export const CartProvider:FC<Prop> = ({ children }) => {
        removeCartProduct,
        updateCartQuantity,
        updateShippingAddress,
-
+       
        createOrder,
+       cleanCart,
        
    }}>
        { children }

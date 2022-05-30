@@ -25,7 +25,7 @@ const productSchema = new Schema({
     sizes: [{
         type: String,
         enum: {
-            values: ['XS','S','M','L','XL','XXL','XXXL'],
+            values: ['XS','S','M','L','XL','XXL','XXXL','UNIQUE'],
             message: '{VALUE} is not a valid size'
         }
     }],
@@ -57,7 +57,7 @@ const productSchema = new Schema({
             values: ['men','women','kid','unisex'],
             message: '{VALUE} is not a valid gender'
         },
-        default: 'women'
+        default: 'unisex'
     },
 }, {
     timestamps: true

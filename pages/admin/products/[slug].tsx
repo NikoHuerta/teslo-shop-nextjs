@@ -52,7 +52,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
 
     useEffect( () => {
         setNumImages( product.images.length );
-    }, []);
+    }, [ product.images.length ]);
 
 
     useEffect(() => {

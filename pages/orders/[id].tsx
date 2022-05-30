@@ -42,7 +42,7 @@ const OrderPage: NextPage<Props> = ({ order, refererPage }) => {
     useEffect(() => {
         if(refererPage === 'summary')
             cleanCart();
-    }, []);
+    }, [ cleanCart, refererPage ]);
     
     const onOrderCompleted = async ( details: OrderResponseBody ) => {
         

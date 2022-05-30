@@ -92,11 +92,11 @@ export const SideMenu = () => {
                 {
                     isLoggedIn ?
                     <>
-                        <ListItem button>
+                        <ListItem>
                             <ListItemIcon>
                                 <AccountCircleOutlined/>
                             </ListItemIcon>
-                            <ListItemText primary={'Profile'} />
+                            <ListItemText primary={`Hello ${ user.name.substring(0, user.name.indexOf(' ')+1) }`} />
                         </ListItem>
 
                         <ListItem button onClick={ () => navigateTo('/orders/history') }>

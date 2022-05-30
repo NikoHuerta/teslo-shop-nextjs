@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -7,6 +7,7 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Box, Card, CardContent, Chip, CircularProgress, Divider, Grid, Link, Typography } from '@mui/material';
 import { CreditCardOffOutlined, CreditScoreOutlined } from '@mui/icons-material';
 
+import { CartContext } from '../../context';
 import { CartList, OrderSummary } from '../../components/cart';
 import { ShopLayout } from '../../components/layouts';
 import { dbOrders } from '../../database';
@@ -16,6 +17,7 @@ import { tesloAPI } from '../../api';
 
 interface Props {
     order: IOrder;
+    refererPage: string;
 }
 
 interface OrderResponseBody {
@@ -29,12 +31,19 @@ interface OrderResponseBody {
 }
 
 
-const OrderPage: NextPage<Props> = ({ order }) => {
+const OrderPage: NextPage<Props> = ({ order, refererPage }) => {
 
     const router = useRouter();
     const [isPaying, setIsPaying] = useState(false);
+    const { cleanCart } = useContext( CartContext );
     const { _id='', user='', orderItems, shippingAddress, billingAddress, paymentResult='', numberOfItems, subTotal, tax, total, isPaid, paidAt='' } = order;
 
+    
+    useEffect(() => {
+        if(refererPage === 'summary')
+            cleanCart();
+    }, []);
+    
     const onOrderCompleted = async ( details: OrderResponseBody ) => {
         
         if( details.status !== 'COMPLETED' ){
@@ -209,6 +218,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     
     const { id = '' } = query;
     const session: any = await getSession({ req });
+    // console.log(req.headers.referer);
+    const refererPage = req.headers.referer?.substring( req.headers.referer?.lastIndexOf('/') + 1 );
+
 
     if( !session ){
         return {
@@ -241,7 +253,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     //todo bien
     return {
         props: {
-            order
+            order,
+            refererPage
         }
     }
 }

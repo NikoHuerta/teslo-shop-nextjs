@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import { Box, Button, Card, CardContent, Chip, Divider, Grid, Link, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Chip, CircularProgress, Divider, Grid, Link, Typography } from '@mui/material';
 import Cookies from 'js-cookie';
 
 import { CartList, OrderSummary } from '../../components/cart';
@@ -15,7 +15,7 @@ import  { countries } from '../../utils';
 const SummaryPage = () => {
 
     const router = useRouter();
-    const { shippingAddress, numberOfItems, createOrder, cleanCart } = useContext( CartContext );
+    const { shippingAddress, numberOfItems, createOrder } = useContext( CartContext );
 
     const [isPosting, setIsPosting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -38,7 +38,6 @@ const SummaryPage = () => {
             
         } else {
             router.replace(`/orders/${ message }`);
-            cleanCart();
         }
     }
     
@@ -103,6 +102,19 @@ const SummaryPage = () => {
                         
 
                         <Box sx={{ mt: 3 }} display='flex' flexDirection='column'>
+                            {/* {
+                                !isPosting &&
+                                    (
+                                        <Box
+                                            sx={{ mt: 2 }}
+                                            display='flex'
+                                            flexDirection='column'
+                                        >
+                                            
+                                        </Box>
+                                    )
+                            } */}
+                            
                             <Button 
                                 color='secondary' 
                                 className='circular-btn' 
@@ -110,7 +122,17 @@ const SummaryPage = () => {
                                 onClick={ onCreateOrder }
                                 disabled={ isPosting }
                             >
-                                Confirm Order
+                                { 
+                                    isPosting 
+                                    ?   (
+                                            <> 
+                                                <CircularProgress thickness={3} sx={{ mr: 4 }} color='inherit' size='25px' /> 
+                                                <Typography variant='subtitle1' component='span'>Creating Order...</Typography>
+                                            </>
+                                        ) 
+                                    : <Typography variant='subtitle1' component='span'>Confirm Order</Typography>
+                                }
+                                
                             </Button>
 
                             <Chip 
